@@ -915,7 +915,9 @@ CONTAINS
   CASE (les)
   DO j=jts,jte
   DO i=its,ite
-    grid%ht(i,j) = 0.
+    ! lbuchart read terrain via text file
+    call read_array_2d_real('input_ht',grid%ht,ids,ide,jds,jde,ims,ime,jms,jme)
+    ! grid%ht(i,j) = 0.
   ENDDO
   ENDDO
 
