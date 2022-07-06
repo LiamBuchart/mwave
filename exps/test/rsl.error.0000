@@ -1,0 +1,15 @@
+taskid: 0 hostname: cdr2057.int.cedar.computecanada.ca
+ module_io_quilt_old.F        2931 F
+Quilting with   1 groups of   0 I/O tasks.
+ Ntasks in X            1 , ntasks in Y            1
+IDEAL V4.2 PREPROCESSOR
+  Domain # 1: dx =   100.000 m
+ *************************************
+ Parent domain
+ ids,ide,jds,jde            1          40           1          40
+ ims,ime,jms,jme           -4          45          -4          45
+ ips,ipe,jps,jpe            1          40           1          40
+ *************************************
+DYNAMICS OPTION: Eulerian Mass Coordinate
+   alloc_space_field: domain            1 ,               52323096  bytes allocated
+  wrf: SUCCESS COMPLETE IDEAL INIT

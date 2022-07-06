@@ -10,10 +10,6 @@
 ml StdEnv/2020  intel/2020.1.217  openmpi/4.0.3
 module load wrf/4.2.1
 
-cd ../unit4/single-line
-
-
-rm -r namelist.input
-ln -sv namelist.input.spinup namelist.input
+cd ../exps/test
 
 mpirun -np 1 ./ideal.exe
