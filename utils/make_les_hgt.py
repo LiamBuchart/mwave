@@ -55,16 +55,14 @@ sn_n = [i for i in sn if i.isdigit()]
 we_n = int(''.join(we_n))
 sn_n = int(''.join(sn_n))
 
-print(we_n, sn_n)
-
 # create a grid of zeros based on namelist size
-hgt = np.empty((sn_n, we_n), np.float32)
+hgt = np.empty((we_n, sn_n), np.float32)
 grid_size = np.shape(hgt)
-print(hgt.ndim, grid_size)
+print(hgt.ndim, grid_size[0], grid_size[1])
 
 # loop through the grid and add topography heights based on the chosen methods
 # note that topography is added in the east-west direction
-for ii in range(grid_size[0]):
+for ii in range(grid_size[1]):
 
     if terrain_type.__eq__("gaussian"):
         
@@ -74,26 +72,18 @@ for ii in range(grid_size[0]):
             # sig = steepness factors (>1 steeper)
             return  mht*np.exp( -np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
             
-        mu = grid_size[1] / 4  # make the gaussian hill ~half the size of the domain
-        sig = 2
-        mht = 500  # max height of the hill
-        x = np.arange(grid_size[1])
+        mu = grid_size[0] / 4  # make the gaussian hill ~half the size of the domain
+        sig = 4
+        mht = 600  # max height of the hill
+        x = np.arange(grid_size[0])
         
-        hgt[ii, :] = gaussian(mht, x, mu, sig)  
+        hgt[:, ii] = gaussian(mht, x, mu, sig)  
     
     #elif terrain_type.__eq__("sinusoidal"):
 
 # now add the required info and array to the outfile_name text file which we will create
-dims = str(sn_n) + " " + str(we_n)
+dims = str(we_n) + " " + str(sn_n)
+print(dims)
 
 np.savetxt(outfile_name, hgt, header=dims, comments="", fmt="%i")
 print("Saved the height array")
-
-
-   
-        
-            
-        
-    
-
-
