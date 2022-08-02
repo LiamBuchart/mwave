@@ -1,0 +1,16 @@
+{
+"topo" : {
+    "mht": 600
+    },
+
+"sounding" : {
+    "P_sfc": 1020,
+    "T_sfc": 295
+    },
+
+"grid_dimensions" : {
+    "ndx": 400,
+    "ndy": 200
+    }
+
+}

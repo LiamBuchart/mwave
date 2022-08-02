@@ -10,7 +10,8 @@ Note that all configurations with have a max height of 1000m.
 lbuchart@eoas.ubc.ca
 """
 import numpy as np
-from context import name_dir
+from context import json_dir, name_dir
+import json
 
 author="lbuchart"
 
@@ -19,41 +20,12 @@ terrain_type = "gaussian"  # what type of simple terrain (pick from list above i
 experiment = "test"  # in the exp directory pick which experiment you will be making terrain for
 outfile_name = "input_ht"
 
-npath = name_dir + experiment + "/"
+# load grid dimensions which are saved in the context file
+with open(str(json_dir) + "config.json") as f:
+    config = json.load(f)
 
-namelist = open(npath + "namelist.input", "r")  # read in the namelist
-print("Read Namelist")
-lines = namelist.readlines()
-print(np.shape(lines)) 
-text = ["e_we", "e_sn"]  # namelist variables for the domain size
-
-we = []
-idw = 0
-sn = []
-ids = 0
-# loop through each line in the namelsit
-for line in lines:
-    #print(line)
-    # check for the ew direction name
-    if text[0] in line:
-        print("Yes")
-        we = line
-        idw += 1
-    
-    # check for the ns direction name
-    if text[1] in line:
-        print("Yes")
-        sn = line
-        ids += 1
-    
-namelist.close()
-
-# extract the digit number of grid cells for both the ns and ew direction
-we_n = [i for i in we if i.isdigit()]
-sn_n = [i for i in sn if i.isdigit()]
-
-we_n = int(''.join(we_n))
-sn_n = int(''.join(sn_n))
+we_n = config["grid_dimensions"]["ndx"]
+sn_n = config["grid_dimensions"]["ndy"]
 
 # create a grid of zeros based on namelist size
 hgt = np.empty((we_n, sn_n), np.float32)
