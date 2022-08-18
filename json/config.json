@@ -10,7 +10,11 @@
 
 "grid_dimensions" : {
     "ndx": 400,
-    "ndy": 200
+    "ndy": 200,
+    "dx":30,
+    "dy":30
     }
 
 }
+
+

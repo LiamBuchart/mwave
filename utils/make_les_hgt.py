@@ -18,7 +18,7 @@ author="lbuchart"
 
 terrain_type = "gaussian"  # what type of simple terrain (pick from list above in ***** ******
 experiment = "test"  # in the exp directory pick which experiment you will be making terrain for
-outfile_name = "input_ht"
+outfile_name = "input_ht" 
 
 # load grid dimensions which are saved in the context file
 with open(str(json_dir) + "config.json") as f:
@@ -26,6 +26,7 @@ with open(str(json_dir) + "config.json") as f:
 
 we_n = config["grid_dimensions"]["ndx"]
 sn_n = config["grid_dimensions"]["ndy"]
+mht = config["topo"]["mht"]  # topography height
 
 # create a grid of zeros based on namelist size
 hgt = np.empty((we_n, sn_n), np.float32)
@@ -39,14 +40,13 @@ for ii in range(grid_size[1]):
     if terrain_type.__eq__("gaussian"):
         
         def gaussian(mht, x, mu, sig):
-            # x = rnage over which gaussian hill is made
+            # x = range over which gaussian hill is made
             # mu = offset of the guassian on domain
             # sig = steepness factors (>1 steeper)
             return  mht*np.exp( -np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
             
-        mu = grid_size[0] / 4  # make the gaussian hill ~half the size of the domain
+        mu = grid_size[0] / 4  # change gaussian width
         sig = 4
-        mht = 600  # max height of the hill
         x = np.arange(grid_size[0])
         
         hgt[:, ii] = gaussian(mht, x, mu, sig)  

@@ -31,7 +31,7 @@ s_elev = 379  # station elevation at Vernon
 start_date = datetime(2018, 5, 1, 12)  # start of 2018 fire season
 end_date = datetime.today()
 time_step = 1  # iterate every day
-time = 12  # which sounding do we want: 12Z
+time = 00  # which sounding do we want: 12Z
 
 mstart = 5  # defining the month in which the fire season starts
 mend = 9  # defining the month in which the fire season ends

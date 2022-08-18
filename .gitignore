@@ -1,0 +1,21 @@
+# files to ignorei
+
+# wrf output (too large)
+wrfout*
+
+# rsl files from cedar
+rsl.*
+
+# slurm files
+slurm*
+
+# backup sfire things
+*backup*
+
+# a few images
+SEARCH*
+test_set*
+U_wind*
+
+# slurm out files in /bin
+sim-*
