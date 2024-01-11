@@ -29,14 +29,14 @@ from wrf import (getvar, xy, interp2dxy, interpline,
 ########## 
 
 ## USER INPUTS ##
-exp = "ht_test/" # name of the experiment you want to plot
+exp = "stable/" # name of the experiment you want to plot
 start = (0, 100)
 end = (-1, 100)
 
 ## END USER INPUTS ##
 
 path, save_path, relevant_files, wrfin = setup_script(exp)
-    
+
 # extract heights of all layers 
 heights = get_heights(wrfin[0])
 
@@ -49,18 +49,16 @@ for ii in range(0, len(wrfin)):
     print(relevant_files[ii])
     ncfile = wrfin[ii]
     
-    # just grab a section of the vertical model heights away from the terrain
-    
     # get the time in datetime format
     ct = extract_times(ncfile, timeidx=0)
     print(ct)
     
     # U winds
-    U = getvar(ncfile, "ua", units="km h-1",
+    U = getvar(ncfile, "ua", units="m s-1",
                meta=True)
     U_line = xy(U, start_point=start, end_point=end)
     U_cross = interp2dxy(U, U_line)
-    print("Wind is in")
+    print("Wind is in ", np.shape(U))
     
     # potential temperature
     theta = getvar(ncfile, "theta", units="k", 
@@ -88,7 +86,7 @@ for ii in range(0, len(wrfin)):
                             gridspec_kw={"height_ratios":[5, 1]})
 
     temp_levels = np.arange(270, 370, 2)  # contour lines 
-    wind_levels = np.arange(-30, 30, 1)
+    wind_levels = np.arange(-30, 31, 1)
 
     xs = np.arange(0, U.shape[-1], 1)
     U_contour = axs[0].contourf(ridge_dist,
@@ -115,7 +113,8 @@ for ii in range(0, len(wrfin)):
         ax.label_outer()
 
     # make pretty titles and whatnot
-    axs[1].set_xticks(np.arange(-3000, 10000, 1500))
+    axs[0].set_xticks(np.arange(-6000, 30000, 6000))
+    axs[1].set_xticks(np.arange(-6000, 30000, 6000))
 
     axs[0].set_ylabel("Height AGL [m]", fontsize=10)
     axs[1].set_ylabel("Terrain Height [m]", fontsize=10)
@@ -125,14 +124,14 @@ for ii in range(0, len(wrfin)):
     axs[0].set_ylim([0, 5000])
     
     axs[1].set_yticks(np.arange(0, 1250, 250))
-    axs[1].set_ylim([0, 800])
+    axs[1].set_ylim([0, 1200])
 
     # colorbar 
     fig.tight_layout()  # call this before calling the colorbar and after calling 
     cbar = plt.colorbar(U_contour, ax=axs)
-    cbar.set_label("Wind Speed [km/h]", fontsize=10)
+    cbar.set_label("Wind Speed [m/s]", fontsize=10)
     
-    plt.savefig(save_path + str(ct)[0:19] + "_pot_spd")
+    plt.savefig(save_path + "potential_speed_" + str(ct)[11:19])
     plt.close()
     
     # clear memory space by deleting large variables

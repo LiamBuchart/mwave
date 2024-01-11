@@ -28,7 +28,6 @@ from context import utils_dir
 
 ##########
 
-
 my_file = "all_soundings.csv"
 df = pd.read_csv(utils_dir + my_file, sep=',')
 
@@ -52,6 +51,9 @@ Td = df["dewpoint"].values * units.degC
 wind_speed = df["speed"].values * units.knots
 wind_dir = df["direction"].values * units.degrees
 u, v = mpcalc.wind_components(wind_speed, wind_dir) 
+# add the wind components to the dataframe
+df["U"] = u
+df["V"] = v
 
 print("Get Mixing Ratio")
 # get vapour mixing ratio and add to dataframe
@@ -68,16 +70,16 @@ df = df.sort_values(by="height", ascending=True)
 print(df)
 
 # plot the total wind profile for a sanity check
-print("Plotting all values ", len(df["speed"]), len(df["height"]))
+print("Plotting all values ", len(df["U"]), len(df["height"]))
 plt.figure(figsize=(12,12))
-plt.plot(df["speed"], df["height"], "k.")
-plt.title("Wind Profile")
-plt.savefig("wind_profile.png")
+plt.plot(df["U"], df["height"], "k.")
+plt.title("U Wind Profile")
+plt.savefig("u_wind_profile.png")
 
 ## start the gradient boosting regression
 
 # pull out the wind speed variable we are trying to predict
-y = np.atleast_2d(df["speed"].ravel()).T
+y = np.atleast_2d(df["U"].ravel()).T
 X = np.atleast_2d(df["height"]).T
 
 print(np.shape(X), np.shape(y))
@@ -96,7 +98,7 @@ common_params = dict(
     min_samples_split = 10,
 )
 
-int_bounds = [0.05, 0.5, 0.95]
+int_bounds = [0.05, 0.5, 0.90, 0.95]
 for alpha in int_bounds:
     gbr = GradientBoostingRegressor(loss="quantile", alpha=alpha, **common_params)
     all_models["q %1.2f" % alpha] = gbr.fit(X_train, y_train)
@@ -117,22 +119,30 @@ y_lower = all_models["q 0.05"].predict(hh)
 y_upper = all_models["q 0.95"].predict(hh)
 y_med = all_models["q 0.50"].predict(hh)
 
-y_speed = all_models["q 0.50"].predict(hh)
+y_speed = all_models["q 0.90"].predict(hh)
 
+# plot just the height and the median in the lowest 1000m
+fig= plt.figure(figsize=(12, 12))
+plt.plot(y_med[0:101], hh[0:101], "r-")
+plt.savefig("Low_level_check.png")
+
+# plot everything
 fig = plt.figure(figsize=(12, 12))
 plt.plot(y_test, X_test, "k.", markersize=10, label="Measured Wind Speed")
 plt.plot(y_med, hh, "r-", label="Predicted Median")
 plt.plot(y_pred, hh, "b--", label="Predicted Mean")
+#plt.plot(y_speed, hh, "y-", linewidth=2, label="LES Sounding")
 plt.plot(y_upper, hh, "g-")
 plt.plot(y_lower, hh, "g-")
 plt.fill_betweenx(hh.ravel(), 
                   y_lower, y_upper, alpha=0.4, facecolor="g",
                   label="Predicted 90% Interval")
 
-plt.title("Observed and Predicted Wind Speed - Vernon Sounding")
-plt.xlabel("Wind Speed [kts]")
+plt.title("Observed and Predicted U Wind Speed - Vernon Sounding")
+plt.xlabel("Speed [kts]")
 plt.ylabel("Height [m]")
 plt.legend()
+plt.ylim([0, 10000])
 plt.savefig("GBR_Speed.png")
 
 ## lets do the same but for the mixing ratio
@@ -172,7 +182,7 @@ y_lower = all_models["q 0.05"].predict(hh)
 y_upper = all_models["q 0.95"].predict(hh)
 y_med = all_models["q 0.50"].predict(hh)
 
-y_mixing = all_models["q 0.50"].predict(hh)
+y_mixing = all_models["q 0.95"].predict(hh)
 
 fig = plt.figure(figsize=(12, 12))
 plt.plot(y_test, X_test, "k.", markersize=8, label="Measured Mixing Ratio")

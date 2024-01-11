@@ -17,7 +17,7 @@ lbuchart@eoas.ubc.ca
 import numpy as np
 import pandas as pd
 
-from IPython.display import display
+#from IPython.display import display
 #from context import utils_dir
 
 author="lbuchart"
