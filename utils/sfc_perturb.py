@@ -23,7 +23,7 @@ sfc_T = config["sounding"]["T_sfc"]
 
 # create the perturbed surface temperature to start convection
 surface_T = (
-    (np.random.rand(ndx, ndy) - 0.5) * 1.5) + sfc_T
+    (np.random.rand(ndx, ndy) - 0.25) * 1.5) + sfc_T
 
 # create the required headers for sfire
 dim_header = ",".join(

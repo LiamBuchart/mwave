@@ -16,8 +16,8 @@ import json
 author="lbuchart"
 
 
-terrain_type = "gaussian"  # what type of simple terrain (pick from list above in ***** ******
-experiment = "test"  # in the exp directory pick which experiment you will be making terrain for
+terrain_type = "agnesi"  # what type of simple terrain (pick from list above in ***** ******
+experiment = "neutstab"  # in the exp directory pick which experiment you will be making terrain for
 outfile_name = "input_ht" 
 
 # load grid dimensions which are saved in the context file
@@ -27,6 +27,7 @@ with open(str(json_dir) + "config.json") as f:
 we_n = config["grid_dimensions"]["ndx"]
 sn_n = config["grid_dimensions"]["ndy"]
 mht = config["topo"]["mht"]  # topography height
+dx = config["grid_dimensions"]["dx"]  # grid dimensions
 
 # create a grid of zeros based on namelist size
 hgt = np.empty((we_n, sn_n), np.float32)
@@ -51,7 +52,20 @@ for ii in range(grid_size[1]):
         
         hgt[:, ii] = gaussian(mht, x, mu, sig)  
     
-    #elif terrain_type.__eq__("sinusoidal"):
+    elif terrain_type.__eq__("agnesi"):
+        
+        def agnesi(mht, x, hw):
+            # mht is the mountain/ridge maximum height
+            # x = range over which the hill is made
+            # hw = the half width of the mountain/ridge
+            
+            return mht * ( (hw**2) / ((hw**2) + (x**2)) )
+        
+        hw = 1000
+        pos_peak = 6000   # position in m from the grid edge (x) that ridge peak is located
+        x = (np.arange(grid_size[0]) * dx) - pos_peak
+        
+        hgt[:, ii] = agnesi(mht, x, hw)
 
 # now add the required info and array to the outfile_name text file which we will create
 dims = str(we_n) + " " + str(sn_n)
